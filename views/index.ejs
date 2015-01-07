@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Broadcast Entry</title>
+<style type="text/css">
+	/* initial prompt */
+	#container-prompt{
+    	margin: 100px auto;
+    	padding: 0px 20px 20px 20px;
+    	width:300px;
+    	/*text-align: center;*/
+    	font-family: arial;
+    	border: 1px solid gray;
+	}
+	#container-prompt div{margin-top:20px; margin-left: 95px}
+	.cancel-btn,.ok-btn{width: 100px; color: white; border:none;}
+	.cancel-btn{background-color: red;}
+	.ok-btn{background-color: blue;}
+	#container-prompt input{width:295px;}
+
+	/* board section */
+	#container-board{width:500px; margin: 10px auto; font-family: arial;}
+	#main-board{border: 1px solid gray; padding:0px 20px;font-size:13px;}
+	input[name='new_msg']{width:495px;}
+	#msg-area button{
+		background-color: green;color:white;border:none;
+		display:block;margin-left: 420px; width:80px;}
+	input[name='new_msg'],#msg-area button{margin-top: 10px;}
+	#container-board h1{font-weight: normal;text-decoration: underline; font-size: 25px;}
+	#main-board div p{display:inline-block;}
+	.name{width:120px;}
+
+</style>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+<script type ="text/javascript">
+    $(document).ready(function (){
+    	$('#container-board').hide();
+
+        var socket = io.connect();
+        $('.ok-btn').click(function(){
+	        socket.emit('user_name',$("input[name='name']").val());
+        });
+
+        // get all latest board_data
+        socket.on('board_data',function(data){
+        	// console.log('board_data:',data);
+        	$('#container-prompt').hide();
+        	$('#container-board').show();
+
+        	// console.log('messages',data);
+        	//display data TO BE COMPLETED
+        	for (i in data){
+        		// console.log(data[i]);
+        		$('#main-board').append("<div><p class='name'>"+data[i].name+":</p><p class='msg'>"+data[i].msg+"</p></div>"
+        		);
+        	}
+        });
+
+        // send new message data
+        $('#msg-area button').click(function(){
+        	socket.emit('msg_data',$('#msg-area input').val());
+        });
+
+        // listen to any new message and update browser
+        socket.on('new_msg',function(data){
+        	// console.log(data);
+        	$('#main-board').append("<div><p class='name'>"+data.name+":</p><p class='msg'>"+data.msg+"</p></div>"
+        	);
+        });
+    });
+
+</script>
+</head>
+<body>
+	<div id='container-prompt'>
+		<p>The page at http://localhost says:</p>
+		<p>Your name:</p>
+		<input type='text' name='name' value='Arthur'>
+		<div>
+			<button class='cancel-btn'>Cancel</button>
+			<button class='ok-btn'>OK</button>
+		</div>
+	</div>
+
+	<div id='container-board'>
+		<h1>Conversation Board</h1>
+		<div id='main-board'></div>
+		<div id='msg-area'>
+			<input type='text' name='new_msg' placeholder='enter your message here'>
+			<button>Send</button>
+		</div>
+	</div>
+</body>
+</html>

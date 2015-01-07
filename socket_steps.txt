@@ -1,0 +1,10 @@
+DONE-1. client goes to "/" and server renders "index"
+DONE-2. client emits name with "user_name"
+DONE-3.1 server listens "user_name" and adds id:name to "users"
+DONE-3.2 server emits new user info with "board_data"
+DONE-4.1 client listens "board_data" 
+DONE-4.2 client show "board" / hide "prompt"
+DONE-4.3 client displays user data / message data
+DONE-5. client emits message with "msg_data"
+DONE-6. server listens "msg_data", save message content and broadcast latest message to all user using "new_msg"
+DONE-7. client listens "new_msg" and update just the new message
