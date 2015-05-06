@@ -1,10 +1,32 @@
 DONE-1. client goes to "/" and server renders "index"
 DONE-2. client emits name with "user_name"
+
+DONE A) client changes jQuery to hide initial prompt
+A.2) Create chatroom list to select via jquery
+
 DONE-3.1 server listens "user_name" and adds id:name to "users"
-DONE-3.2 server emits new user info with "board_data"
+
+modify client emits chatroom with "select_chatroom" event with chatroom_list data
+
+DONE - 3.2 server listens "select_chatroom" event and store if new "chatroom" info
+
+DONE emits user info with "board_data" [need to modify board structure]
+
 DONE-4.1 client listens "board_data" 
-DONE-4.2 client show "board" / hide "prompt"
-DONE-4.3 client displays user data / message data
-DONE-5. client emits message with "msg_data"
-DONE-6. server listens "msg_data", save message content and broadcast latest message to all user using "new_msg"
+
+DONE - DONE-4.2 client show "board" / hide "chatroom prompt" [need to modify what to hide]
+
+DONE - 4.3 client displays user data / message data
+
+DONE DONE-5. client emits message with "msg_data" [modify msg_data with chatroom]
+
+DONE - DONE-6. server listens "msg_data", save message content and broadcast latest message to all user using "new_msg" [change data structure of message content]
+
 DONE-7. client listens "new_msg" and update just the new message
+
+Option to exit chatroom
+B.1) Have button to exit at client and emit with "exit_room" to server
+Server listens to "exit_room" and send new list of rooms with "update_rooms"
+B.2) client listens to "update_rooms" and reload list
+
+

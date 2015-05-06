@@ -9,7 +9,6 @@
     	margin: 100px auto;
     	padding: 0px 20px 20px 20px;
     	width:300px;
-    	/*text-align: center;*/
     	font-family: arial;
     	border: 1px solid gray;
 	}
@@ -19,17 +18,48 @@
 	.ok-btn{background-color: blue;}
 	#container-prompt input{width:295px;}
 
-	/* board section */
-	#container-board{width:500px; margin: 10px auto; font-family: arial;}
+	/* chatroom option section*/
+	#chatroom-options{
+		margin: 100px auto;
+		padding: 0px 20px 20px 20px;
+		width:300px;
+		font-family: arial;
+		border: 1px solid gray;
+	}
+	.btn{
+		display:block;
+		color: white; border:none; background-color: blue;		
+	}
+	.chatroom-btn{
+		margin: 10px auto; border-radius: 10px;
+		height: 50px; width:150px;
+		font-size: 20px;
+	}
+	.new-chatroom {margin-top: 20px;}
+	.new-chatroom input, .new-chatroom button{display: inline-block; vertical-align: top;} 
+	.new-chatroom input{height:30px; width:190px; padding:0px 10px;font-size: 18px;}
+	.new-chatroom button{width:75px; height:32px; font-size: 14px; margin-left: 5px;}
+
+
+	/* chatroom/board section */
+	#container-board{width:600px; margin: 10px auto; font-family: arial;}
 	#main-board{border: 1px solid gray; padding:0px 20px;font-size:13px;}
-	input[name='new_msg']{width:495px;}
+	input[name='new_msg']{width:588px; padding: 5px;}
+	#chatroom-header{overflow: hidden; margin-bottom: 20px;}
+	#container-board h1, #exit-room-btn{display: inline;}
+	#exit-room-btn{		
+		background-color: red;color:white;border:none;
+		margin: 0px 0px 10px 200px; width:70px; float:right;
+	}
 	#msg-area button{
 		background-color: green;color:white;border:none;
-		display:block;margin-left: 420px; width:80px;}
+		display:block;margin-left: 520px; width:80px;
+	}
 	input[name='new_msg'],#msg-area button{margin-top: 10px;}
-	#container-board h1{font-weight: normal;text-decoration: underline; font-size: 25px;}
+	#container-board h1{font-weight: normal;text-decoration: underline; font-size: 18px;}
 	#main-board div p{display:inline-block;}
 	.name{width:120px;}
+
 
 </style>
 
@@ -37,39 +67,86 @@
 <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
 <script type ="text/javascript">
     $(document).ready(function (){
+    	$('#chatroom-options').hide();
     	$('#container-board').hide();
-
         var socket = io.connect();
+
+        // emit user's name
         $('.ok-btn').click(function(){
 	        socket.emit('user_name',$("input[name='name']").val());
+	    	$('#container-prompt').hide();
+        });
+
+        // listen for chatroom list and generate chatroom buttons
+        socket.on('chatroom_list',function(data){
+        	// console.log('chatroom_list',data);
+        	$('#existing-chatrooms').html("");
+        	for (i in data){
+	        	$('#existing-chatrooms').append("<button class='chatroom-btn btn' 	value='"+data[i]+"'>"+data[i]+"</button>");
+        	}
+        	$('#chatroom-options').show();
+
+        });
+
+        // emit user's chatroom
+        $(document).on('click','.btn',function(){
+        	var value=$(this).val();
+        	if (value=='Create'){
+        		var chatroom_data={
+        			'chatroom' : $("input[name='chatroom-name']").val(),
+        			'new' : true
+        		};
+        	}
+        	else{
+        		chatroom_data={
+        			'chatroom' : value,
+        			'new' : false
+        		};
+        	}
+        	socket.emit('select_chatroom',chatroom_data);
+        	// console.log(chatroom_data);
         });
 
         // get all latest board_data
+        var current_chatroom='';
         socket.on('board_data',function(data){
         	// console.log('board_data:',data);
-        	$('#container-prompt').hide();
+        	current_chatroom=data.chatroom_id;
+        	$('#chatroom-id').html(current_chatroom);
+        	$('#chatroom-options').hide();
         	$('#container-board').show();
-
         	// console.log('messages',data);
-        	//display data TO BE COMPLETED
-        	for (i in data){
-        		// console.log(data[i]);
-        		$('#main-board').append("<div><p class='name'>"+data[i].name+":</p><p class='msg'>"+data[i].msg+"</p></div>"
+        	// display data
+        	$('#main-board').html(""); //clear previous data
+        	for (i in data.msgs){
+        		$('#main-board').append("<div><p class='name'>"+data.msgs[i].name+":</p><p class='msg'>"+data.msgs[i].msg+"</p></div>"
         		);
         	}
         });
 
         // send new message data
         $('#msg-area button').click(function(){
-        	socket.emit('msg_data',$('#msg-area input').val());
+        	socket.emit('msg_data',{
+        		'chatroom_id':current_chatroom,
+        		'msg':$('#msg-area input').val()
+        	});
         });
 
-        // listen to any new message and update browser
+        // listen to any new message and update browser (only if message belongs to chatroom)
         socket.on('new_msg',function(data){
-        	// console.log(data);
-        	$('#main-board').append("<div><p class='name'>"+data.name+":</p><p class='msg'>"+data.msg+"</p></div>"
-        	);
+        	if (data.chatroom_id==current_chatroom){
+        		$('#main-board').append("<div><p class='name'>"+data.name+":</p><p class='msg'>"+data.msg+"</p></div>"
+        		);        		
+        	}
         });
+
+        // emits when user exiting room
+        $('#exit-room-btn').click(function(){
+        	current_chatroom="";
+        	socket.emit('exit_room');
+        	$('#container-board').hide();        	
+        });
+
     });
 
 </script>
@@ -85,8 +162,23 @@
 		</div>
 	</div>
 
+	<div id='chatroom-options'>
+		<p>Please choose your chatrooms or create a new one:</p>
+		<div>
+			<div id='existing-chatrooms'></div>
+			<div class='new-chatroom'>
+				<input name='chatroom-name' type='text' placeholder='Enter chatroom name'>
+				<button class='chatroom-create btn' value='Create'>Create</button>
+			</div>
+		</div>
+	</div>
+
+
 	<div id='container-board'>
-		<h1>Conversation Board</h1>
+		<div id='chatroom-header'>
+			<h1>Conversation Board (Chatroom: <span id='chatroom-id'></span>)</h1>
+			<button id='exit-room-btn'>Exit Room</button>
+		</div>
 		<div id='main-board'></div>
 		<div id='msg-area'>
 			<input type='text' name='new_msg' placeholder='enter your message here'>
