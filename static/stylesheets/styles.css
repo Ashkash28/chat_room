@@ -1,0 +1,83 @@
+
+body {
+	background-image: url("/images/cover.png");
+}
+/* initial prompt */
+#container-prompt{
+	margin: 100px auto;
+	padding: 0px 20px 20px 20px;
+	width:400px;
+	/*font-family: arial;*/
+	/*border: 4px solid black;*/
+}
+#container-prompt div{margin-top:20px; margin-left: 95px}
+.cancel-btn,.ok-btn{ margin-top: 10px; width: 100px; color: white; border:none;}
+.ok-btn{ margin-left: 10px;}
+/*.cancel-btn{background-color: red;}*/
+/*.ok-btn{background-color: blue;}*/
+#container-prompt input{width:295px;}
+
+/* chatroom option section*/
+#chatroom-options{
+	margin: 100px auto;
+	padding: 0px 20px 20px 20px;
+	width:400px;
+	/*font-family: arial;*/
+	/*border: 4px solid black;*/
+}
+
+.chatroom-create{
+	margin-left: 5px;
+	vertical-align: middle;
+}
+/*.btn{
+	display:block;
+	color: white; border:none; background-color: blue;		
+}*/
+.chatroom-btn{
+	margin: 10px auto;
+	border-radius: 10px;
+	height: 50px; width:150px;
+	font-size: 20px;
+}
+.new-chatroom {margin-top: 20px;}
+.new-chatroom input, .new-chatroom button{display: inline-block; vertical-align: top;} 
+.new-chatroom input{height:30px; width:205px; padding:0px 10px;font-size: 18px;}
+.new-chatroom button{width:75px; height:32px; font-size: 14px; }
+
+
+/* chatroom/board section */
+#container-board{width:600px; margin: 10px auto; font-family: arial;}
+#main-board{
+	/*border: 4px solid black;*/
+	padding:0px 20px;
+	font-size:13px;
+}
+input[name='new_msg']{width:588px; padding: 5px;}
+#chatroom-header{overflow: hidden; margin-bottom: 20px;}
+#container-board h1, #exit-room-btn{display: inline;}
+#exit-room-btn{		
+	/*background-color: red;color:white;border:none;*/
+	margin: 0px 0px 10px 200px; width:90px; float:right;
+}
+#msg-area button{
+	background-color: green;color:white;border:none;
+	display:block;margin-left: 520px; width:80px;
+}
+input[name='new_msg'],#msg-area button{margin-top: 10px;}
+#container-board h1{font-weight: normal;text-decoration: underline; }
+#main-board div p{display:inline-block;}
+#main-board{ height: 300px; overflow: auto;}
+.name{width:120px; color: white;}
+.msg{color: white;}
+
+.chatroom-btn{
+	margin: 10px;
+}
+
+.current{
+	color: #FFA500;
+}
+/*#chatroom-id{color: ;}*/
+
+
